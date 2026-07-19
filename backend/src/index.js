@@ -5,6 +5,8 @@ import { config } from "./config/app.config.js";
 import { asyncHandler } from "./utils/asyncHandler.js";
 import { errorHandler } from "./middleware/errorHandler.js";
 
+import apiRoutes from "./routes/index.js";
+
 const PORT = config.port;
 
 const app = express();
@@ -51,6 +53,9 @@ app.get(
     });
   }),
 );
+
+//! ─── API Routes ──────────────────────────────────────────────
+app.use("/api/v1", apiRoutes);
 //! ─── Error Handler ────────────────────────────────────────────
 app.use(errorHandler);
 

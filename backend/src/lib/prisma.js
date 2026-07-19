@@ -2,7 +2,7 @@ import "dotenv/config";
 import pg from "pg";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { config } from "../config/app.config.js";
-import { PrismaClient } from "../generated/prisma/client/client.js";
+import { PrismaClient } from "../generated/prisma/index.js";
 
 const globalForPrisma = globalThis;
 
