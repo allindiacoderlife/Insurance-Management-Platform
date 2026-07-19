@@ -1,0 +1,14 @@
+model Claim {
+  id             String      @id @default(uuid())
+  policyId       String      @map("policy_id")
+  claimAmount    Float       @map("claim_amount")
+  reason         String
+  status         ClaimStatus @default(PENDING)
+  submissionDate DateTime    @default(now()) @map("submission_date")
+  createdAt      DateTime    @default(now()) @map("created_at")
+  updatedAt      DateTime    @updatedAt @map("updated_at")
+
+  policy Policy @relation(fields: [policyId], references: [id], onDelete: Cascade)
+
+  @@map("claims")
+}

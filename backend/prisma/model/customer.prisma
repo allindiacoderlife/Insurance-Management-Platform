@@ -1,0 +1,17 @@
+model Customer {
+  id        String   @id @default(uuid())
+  userId    String?  @unique @map("user_id")
+  name      String
+  dob       DateTime
+  phone     String
+  address   String
+  email     String   @unique
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  user      User?      @relation(fields: [userId], references: [id], onDelete: SetNull)
+  policies  Policy[]
+  documents Document[]
+
+  @@map("customers")
+}

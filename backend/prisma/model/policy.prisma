@@ -1,0 +1,18 @@
+model Policy {
+  id            String       @id @default(uuid())
+  customerId    String       @map("customer_id")
+  policyType    String       @map("policy_type")
+  policyNumber  String       @unique @map("policy_number")
+  premiumAmount Float        @map("premium_amount")
+  startDate     DateTime     @map("start_date")
+  endDate       DateTime     @map("end_date")
+  status        PolicyStatus @default(ACTIVE)
+  createdAt     DateTime     @default(now()) @map("created_at")
+  updatedAt     DateTime     @updatedAt @map("updated_at")
+
+  customer Customer         @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  claims   Claim[]
+  payments PremiumPayment[]
+
+  @@map("policies")
+}

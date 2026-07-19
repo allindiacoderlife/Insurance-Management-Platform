@@ -1,0 +1,26 @@
+enum Role {
+  ADMIN
+  AGENT
+  CUSTOMER
+}
+
+enum PolicyStatus {
+  ACTIVE
+  EXPIRED
+  CANCELLED
+  RENEWED
+}
+
+enum ClaimStatus {
+  PENDING
+  VERIFYING
+  APPROVED
+  REJECTED
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  OVERDUE
+  FAILED
+}
