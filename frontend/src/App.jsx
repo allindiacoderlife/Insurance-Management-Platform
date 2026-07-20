@@ -7,6 +7,12 @@ import {
   ForgotPassword,
   ResetPassword,
   Dashboard,
+  CustomerList,
+  PolicyList,
+  PaymentList,
+  ClaimList,
+  DocumentManager,
+  ReportsDashboard,
 } from "./pages";
 
 // Protected Route Wrapper
@@ -31,7 +37,7 @@ const ProtectedRoute = ({ children }) => {
   return children;
 };
 
-// Public Route (redirects to dashboard if already logged in)
+// Public Route
 const PublicRoute = ({ children }) => {
   const { user, loading } = useAuth();
 
@@ -47,51 +53,22 @@ const PublicRoute = ({ children }) => {
 const App = () => {
   return (
     <Routes>
-      <Route
-        path="/"
-        element={<Navigate to="/login" replace />}
-      />
-      <Route
-        path="/login"
-        element={
-          <PublicRoute>
-            <Login />
-          </PublicRoute>
-        }
-      />
-      <Route
-        path="/register"
-        element={
-          <PublicRoute>
-            <Register />
-          </PublicRoute>
-        }
-      />
+      <Route path="/" element={<Navigate to="/login" replace />} />
+      <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
+      <Route path="/register" element={<PublicRoute><Register /></PublicRoute>} />
       <Route path="/verify-otp" element={<VerifyOtp />} />
-      <Route
-        path="/forgot-password"
-        element={
-          <PublicRoute>
-            <ForgotPassword />
-          </PublicRoute>
-        }
-      />
-      <Route
-        path="/reset-password"
-        element={
-          <PublicRoute>
-            <ResetPassword />
-          </PublicRoute>
-        }
-      />
-      <Route
-        path="/dashboard"
-        element={
-          <ProtectedRoute>
-            <Dashboard />
-          </ProtectedRoute>
-        }
-      />
+      <Route path="/forgot-password" element={<PublicRoute><ForgotPassword /></PublicRoute>} />
+      <Route path="/reset-password" element={<PublicRoute><ResetPassword /></PublicRoute>} />
+
+      {/* Protected Enterprise Module Routes */}
+      <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+      <Route path="/customers" element={<ProtectedRoute><CustomerList /></ProtectedRoute>} />
+      <Route path="/policies" element={<ProtectedRoute><PolicyList /></ProtectedRoute>} />
+      <Route path="/payments" element={<ProtectedRoute><PaymentList /></ProtectedRoute>} />
+      <Route path="/claims" element={<ProtectedRoute><ClaimList /></ProtectedRoute>} />
+      <Route path="/documents" element={<ProtectedRoute><DocumentManager /></ProtectedRoute>} />
+      <Route path="/reports" element={<ProtectedRoute><ReportsDashboard /></ProtectedRoute>} />
+
       <Route path="*" element={<Navigate to="/login" replace />} />
     </Routes>
   );
