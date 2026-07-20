@@ -8,6 +8,7 @@
     "dev": "nodemon src/index.js",
     "db:sync": "prisma db push && prisma generate",
     "db:reset": "prisma db push --force-reset && prisma generate",
+    "db:seed": "node prisma/seed.js",
     "db:studio": "prisma studio"
   },
   "keywords": [],
