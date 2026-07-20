@@ -1,13 +1,99 @@
-import { Routes, Route } from "react-router-dom";
-import { Home } from "./pages";
+import { Routes, Route, Navigate } from "react-router-dom";
+import { useAuth } from "./context/AuthContext";
+import {
+  Login,
+  Register,
+  VerifyOtp,
+  ForgotPassword,
+  ResetPassword,
+  Dashboard,
+} from "./pages";
+
+// Protected Route Wrapper
+const ProtectedRoute = ({ children }) => {
+  const { user, loading } = useAuth();
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-slate-50">
+        <div className="flex flex-col items-center gap-3">
+          <div className="w-10 h-10 border-4 border-[#4A2B4B] border-t-transparent rounded-full animate-spin"></div>
+          <span className="text-xs font-semibold text-slate-500">Loading Havenix...</span>
+        </div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return <Navigate to="/login" replace />;
+  }
+
+  return children;
+};
+
+// Public Route (redirects to dashboard if already logged in)
+const PublicRoute = ({ children }) => {
+  const { user, loading } = useAuth();
+
+  if (loading) return null;
+
+  if (user) {
+    return <Navigate to="/dashboard" replace />;
+  }
+
+  return children;
+};
 
 const App = () => {
   return (
-    <main>
-      <Routes>
-        <Route path="/" element={<Home />} />
-      </Routes>
-    </main>
+    <Routes>
+      <Route
+        path="/"
+        element={<Navigate to="/login" replace />}
+      />
+      <Route
+        path="/login"
+        element={
+          <PublicRoute>
+            <Login />
+          </PublicRoute>
+        }
+      />
+      <Route
+        path="/register"
+        element={
+          <PublicRoute>
+            <Register />
+          </PublicRoute>
+        }
+      />
+      <Route path="/verify-otp" element={<VerifyOtp />} />
+      <Route
+        path="/forgot-password"
+        element={
+          <PublicRoute>
+            <ForgotPassword />
+          </PublicRoute>
+        }
+      />
+      <Route
+        path="/reset-password"
+        element={
+          <PublicRoute>
+            <ResetPassword />
+          </PublicRoute>
+        }
+      />
+      <Route
+        path="/dashboard"
+        element={
+          <ProtectedRoute>
+            <Dashboard />
+          </ProtectedRoute>
+        }
+      />
+      <Route path="*" element={<Navigate to="/login" replace />} />
+    </Routes>
   );
 };
 
