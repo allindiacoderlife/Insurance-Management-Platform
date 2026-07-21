@@ -2,10 +2,51 @@
 
 @layer base {
   body {
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-    color: #1e293b;
-    background-color: #f8fafc;
+    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    color: #0f172a;
+    background-color: #f7f8f4;
   }
+}
+
+/* Hide native Edge/IE/Chrome password reveal & clear icons */
+input::-ms-reveal,
+input::-ms-clear {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}
+
+input::-webkit-contacts-auto-fill-button,
+input::-webkit-credentials-auto-fill-button {
+  visibility: hidden !important;
+  pointer-events: none !important;
+  position: absolute !important;
+  right: 0 !important;
+}
+
+/* Custom Design System Tokens */
+.bg-canvas {
+  background-color: #f7f8f4;
+}
+
+.bg-forest-dark {
+  background-color: #0b281a;
+}
+
+.bg-forest-light {
+  background-color: #e2f5cf;
+}
+
+.text-forest-dark {
+  color: #0b281a;
+}
+
+.text-forest-muted {
+  color: #4b6354;
+}
+
+.border-forest-light {
+  border-color: #d8f0c2;
 }
 
 @keyframes fadeIn {
@@ -20,5 +61,5 @@
 }
 
 .animate-fadeIn {
-  animation: fadeIn 0.25s ease-out forwards;
+  animation: fadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }

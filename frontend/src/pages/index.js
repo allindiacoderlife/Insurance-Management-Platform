@@ -10,3 +10,6 @@ export { PaymentList } from "./PaymentList";
 export { ClaimList } from "./ClaimList";
 export { DocumentManager } from "./DocumentManager";
 export { ReportsDashboard } from "./ReportsDashboard";
+export { Profile } from "./Profile";
+export { AccountSettings } from "./AccountSettings";
+export { UpgradePlan } from "./UpgradePlan";

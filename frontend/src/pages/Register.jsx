@@ -80,8 +80,8 @@ export const Register = () => {
             required
             value={formData.name}
             onChange={handleChange}
-            placeholder="John Doe"
-            className="w-full h-11 px-4 rounded-xl border border-slate-200 bg-slate-50/50 text-slate-800 text-sm font-medium focus:bg-white focus:border-[#4A2B4B] focus:ring-4 focus:ring-[#4A2B4B]/10 outline-none transition-all"
+            placeholder="Chirag Saxena"
+            className="w-full h-11 px-4 rounded-xl border border-slate-200 bg-slate-50/50 text-slate-800 text-sm font-semibold focus:bg-white focus:border-[#0b281a] focus:ring-4 focus:ring-[#0b281a]/10 outline-none transition-all"
           />
         </div>
 
@@ -96,8 +96,8 @@ export const Register = () => {
             required
             value={formData.email}
             onChange={handleChange}
-            placeholder="john@example.com"
-            className="w-full h-11 px-4 rounded-xl border border-slate-200 bg-slate-50/50 text-slate-800 text-sm font-medium focus:bg-white focus:border-[#4A2B4B] focus:ring-4 focus:ring-[#4A2B4B]/10 outline-none transition-all"
+            placeholder="chirag@example.com"
+            className="w-full h-11 px-4 rounded-xl border border-slate-200 bg-slate-50/50 text-slate-800 text-sm font-semibold focus:bg-white focus:border-[#0b281a] focus:ring-4 focus:ring-[#0b281a]/10 outline-none transition-all"
           />
         </div>
 
@@ -114,7 +114,7 @@ export const Register = () => {
               value={formData.password}
               onChange={handleChange}
               placeholder="Create strong password"
-              className="w-full h-11 pl-4 pr-11 rounded-xl border border-slate-200 bg-slate-50/50 text-slate-800 text-sm font-medium focus:bg-white focus:border-[#4A2B4B] focus:ring-4 focus:ring-[#4A2B4B]/10 outline-none transition-all"
+              className="w-full h-11 pl-4 pr-11 rounded-xl border border-slate-200 bg-slate-50/50 text-slate-800 text-sm font-semibold focus:bg-white focus:border-[#0b281a] focus:ring-4 focus:ring-[#0b281a]/10 outline-none transition-all"
             />
             <button
               type="button"
@@ -138,7 +138,7 @@ export const Register = () => {
             name="role"
             value={formData.role}
             onChange={handleChange}
-            className="w-full h-11 px-4 rounded-xl border border-slate-200 bg-slate-50/50 text-slate-800 text-sm font-medium focus:bg-white focus:border-[#4A2B4B] focus:ring-4 focus:ring-[#4A2B4B]/10 outline-none transition-all cursor-pointer"
+            className="w-full h-11 px-4 rounded-xl border border-slate-200 bg-slate-50/50 text-slate-800 text-sm font-semibold focus:bg-white focus:border-[#0b281a] focus:ring-4 focus:ring-[#0b281a]/10 outline-none transition-all cursor-pointer"
           >
             <option value="CUSTOMER">Customer (Policy Holder)</option>
             <option value="AGENT">Insurance Agent</option>
@@ -158,8 +158,8 @@ export const Register = () => {
                 name="phone"
                 value={formData.phone}
                 onChange={handleChange}
-                placeholder="+1234567890"
-                className="w-full h-10 px-3.5 rounded-xl border border-slate-200 bg-slate-50/50 text-slate-800 text-xs font-medium focus:bg-white focus:border-[#4A2B4B] outline-none"
+                placeholder="+91 9876543210"
+                className="w-full h-10 px-3.5 rounded-xl border border-slate-200 bg-slate-50/50 text-slate-800 text-xs font-semibold focus:bg-white focus:border-[#0b281a] outline-none"
               />
             </div>
             <div className="space-y-1">
@@ -171,7 +171,7 @@ export const Register = () => {
                 name="dob"
                 value={formData.dob}
                 onChange={handleChange}
-                className="w-full h-10 px-3.5 rounded-xl border border-slate-200 bg-slate-50/50 text-slate-800 text-xs font-medium focus:bg-white focus:border-[#4A2B4B] outline-none"
+                className="w-full h-10 px-3.5 rounded-xl border border-slate-200 bg-slate-50/50 text-slate-800 text-xs font-semibold focus:bg-white focus:border-[#0b281a] outline-none"
               />
             </div>
           </div>
@@ -181,7 +181,7 @@ export const Register = () => {
         <button
           type="submit"
           disabled={loading}
-          className="w-full h-11 mt-3 rounded-xl bg-[#4A2B4B] hover:bg-[#391e3a] text-white font-bold text-sm shadow-md shadow-[#4A2B4B]/25 hover:shadow-lg transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-70"
+          className="w-full h-11 mt-3 rounded-xl bg-[#0b281a] hover:bg-[#061d12] text-white font-extrabold text-xs shadow-md shadow-[#0b281a]/25 hover:shadow-lg transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-70"
         >
           {loading ? (
             <>
@@ -198,7 +198,7 @@ export const Register = () => {
           Already have an account?{" "}
           <Link
             to="/login"
-            className="font-bold text-[#4A2B4B] hover:underline cursor-pointer ml-1"
+            className="font-bold text-[#0b281a] hover:underline cursor-pointer ml-1"
           >
             Login
           </Link>

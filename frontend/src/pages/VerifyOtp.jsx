@@ -112,7 +112,6 @@ export const VerifyOtp = () => {
     <AuthLayout
       title="Verify Email OTP"
       subtitle={`We have sent a 6-digit verification code to ${email || "your email"}.`}
-      showSocial={false}
     >
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Error Alert */}
@@ -143,7 +142,7 @@ export const VerifyOtp = () => {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="user@example.com"
-              className="w-full h-11 px-4 rounded-xl border border-slate-200 bg-slate-50/50 text-slate-800 text-sm font-medium focus:bg-white focus:border-[#4A2B4B] outline-none"
+              className="w-full h-11 px-4 rounded-xl border border-slate-200 bg-slate-50/50 text-slate-800 text-sm font-semibold focus:bg-white focus:border-[#0b281a] outline-none"
             />
           </div>
         )}
@@ -164,7 +163,7 @@ export const VerifyOtp = () => {
                 onChange={(e) => handleOtpChange(idx, e.target.value)}
                 onKeyDown={(e) => handleKeyDown(idx, e)}
                 onPaste={handlePaste}
-                className="w-11 h-13 sm:w-12 sm:h-14 text-center text-xl font-bold text-[#4A2B4B] rounded-xl border-2 border-slate-200 bg-slate-50/50 focus:bg-white focus:border-[#4A2B4B] focus:ring-4 focus:ring-[#4A2B4B]/15 outline-none transition-all"
+                className="w-11 h-13 sm:w-12 sm:h-14 text-center text-xl font-extrabold text-[#0b281a] rounded-xl border-2 border-slate-200 bg-slate-50/50 focus:bg-white focus:border-[#0b281a] focus:ring-4 focus:ring-[#0b281a]/15 outline-none transition-all"
               />
             ))}
           </div>
@@ -180,7 +179,7 @@ export const VerifyOtp = () => {
               type="button"
               onClick={handleResend}
               disabled={resending}
-              className="font-bold text-[#4A2B4B] hover:underline cursor-pointer flex items-center gap-1.5 disabled:opacity-50"
+              className="font-bold text-[#0b281a] hover:underline cursor-pointer flex items-center gap-1.5 disabled:opacity-50"
             >
               {resending ? (
                 <Loader2 className="w-3.5 h-3.5 animate-spin" />
@@ -196,7 +195,7 @@ export const VerifyOtp = () => {
         <button
           type="submit"
           disabled={loading || otp.join("").length !== 6}
-          className="w-full h-12 rounded-xl bg-[#4A2B4B] hover:bg-[#391e3a] text-white font-bold text-sm shadow-md shadow-[#4A2B4B]/25 hover:shadow-lg transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-70 disabled:cursor-not-allowed"
+          className="w-full h-12 rounded-xl bg-[#0b281a] hover:bg-[#061d12] text-white font-extrabold text-xs shadow-md shadow-[#0b281a]/25 hover:shadow-lg transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-70 disabled:cursor-not-allowed"
         >
           {loading ? (
             <>
@@ -214,7 +213,7 @@ export const VerifyOtp = () => {
         {/* Return link */}
         <div className="text-center text-xs text-slate-500 font-medium">
           Back to{" "}
-          <Link to="/login" className="font-bold text-[#4A2B4B] hover:underline">
+          <Link to="/login" className="font-bold text-[#0b281a] hover:underline">
             Login
           </Link>
         </div>

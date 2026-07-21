@@ -1,193 +1,266 @@
+import { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
+import { DashboardLayout } from "../components/DashboardLayout";
+import api from "../api/axios";
 import {
   ShieldCheck,
-  MailCheck,
-  User,
-  Phone,
-  MapPin,
+  Building2,
+  TrendingUp,
+  IndianRupee,
   Calendar,
-  ShieldAlert,
-  Users,
-  CreditCard,
-  FileText,
-  FolderOpen,
+  ChevronDown,
+  ArrowUpRight,
+  CheckCircle2,
+  Loader2,
 } from "lucide-react";
-import { Link } from "react-router-dom";
-import { DashboardLayout } from "../components/DashboardLayout";
+import { RevenueBarChart, PolicyDonutChart, ClaimApprovalGauge } from "../components/AnalyticsCharts";
 
 export const Dashboard = () => {
   const { user } = useAuth();
+  const [metrics, setMetrics] = useState(null);
+  const [chartData, setChartData] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchDashboardData = async () => {
+      try {
+        const res = await api.get("/reports/summary");
+        setMetrics(res.data.data.metrics);
+        setChartData(res.data.data.chartData);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDashboardData();
+  }, []);
+
+  if (loading) {
+    return (
+      <DashboardLayout title="Insurance Dashboard" subtitle="Track performance, manage policies, and settle claims.">
+        <div className="p-16 flex justify-center">
+          <Loader2 className="w-8 h-8 animate-spin text-[#0b281a]" />
+        </div>
+      </DashboardLayout>
+    );
+  }
 
   return (
     <DashboardLayout
-      title="Dashboard Overview"
-      subtitle="Welcome back to Havenix Insurance Platform."
+      title="Insurance Dashboard"
+      subtitle="Track performance, manage policies, and close more policy deals."
     >
-      {/* Email Verification Banner if not verified */}
-      {!user?.isEmailVerified && (
-        <div className="p-4 rounded-2xl bg-amber-50 border border-amber-200 text-amber-800 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-xs">
-          <div className="flex items-center gap-3">
-            <ShieldAlert className="w-5 h-5 text-amber-600 shrink-0" />
-            <div>
-              <p className="text-xs font-bold">Email Not Verified</p>
-              <p className="text-xs text-amber-700">
-                Please verify your email address to unlock full insurance policy
-                management.
-              </p>
-            </div>
-          </div>
-          <Link
-            to="/verify-otp"
-            className="px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-xl text-xs font-bold transition-all shadow-xs cursor-pointer"
-          >
-            Verify Email Now
-          </Link>
-        </div>
-      )}
-
-      {/* Welcome Hero Banner */}
-      <div className="bg-gradient-to-r from-[#4A2B4B] to-[#2B172C] rounded-3xl p-8 text-white shadow-xl shadow-[#4A2B4B]/10 relative overflow-hidden">
-        <div className="relative z-10 max-w-2xl">
-          <span className="inline-block px-3 py-1 bg-white/20 backdrop-blur-md rounded-full text-xs font-semibold mb-3 tracking-wide">
-            {user?.role} DASHBOARD
-          </span>
-          <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight mb-2">
-            Welcome, {user?.name}!
-          </h1>
-          <p className="text-slate-200 text-sm leading-relaxed opacity-90">
-            Manage your insurance policies, submit claim requests, track premium
-            payments, and view uploaded documents.
-          </p>
+      {/* Date Filter Bar */}
+      <div className="flex justify-end mb-2">
+        <div className="inline-flex items-center gap-2 bg-white border border-slate-200/80 px-3.5 py-1.5 rounded-2xl text-xs font-bold text-slate-700 shadow-xs cursor-pointer">
+          <Calendar className="w-3.5 h-3.5 text-slate-400" />
+          <span>May 5 – May 11, 2026</span>
+          <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
         </div>
       </div>
 
-      {/* Quick Navigation Cards */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        {(user?.role === "ADMIN" || user?.role === "AGENT") && (
-          <Link
-            to="/customers"
-            className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs hover:border-[#4A2B4B] hover:shadow-md transition-all flex flex-col items-center text-center gap-2 group"
-          >
-            <div className="w-12 h-12 rounded-2xl bg-purple-50 text-[#4A2B4B] flex items-center justify-center font-bold group-hover:scale-110 transition-transform">
-              <Users className="w-6 h-6" />
+      {/* KPI Metric Stat Cards matching UX mockup */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+        {/* Total Policies */}
+        <div className="bg-white p-6 rounded-3xl border border-slate-200/60 shadow-sm space-y-3">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-bold text-slate-400">Total Policies</span>
+            <div className="w-10 h-10 rounded-2xl bg-[#0b281a] text-white flex items-center justify-center font-bold shadow-md shadow-[#0b281a]/20">
+              <Building2 className="w-5 h-5 text-emerald-400" />
             </div>
-            <span className="font-bold text-slate-800 text-xs">Customers</span>
-          </Link>
-        )}
-
-        <Link
-          to="/policies"
-          className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs hover:border-[#4A2B4B] hover:shadow-md transition-all flex flex-col items-center text-center gap-2 group"
-        >
-          <div className="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold group-hover:scale-110 transition-transform">
-            <ShieldCheck className="w-6 h-6" />
           </div>
-          <span className="font-bold text-slate-800 text-xs">Policies</span>
-        </Link>
-
-        <Link
-          to="/payments"
-          className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs hover:border-[#4A2B4B] hover:shadow-md transition-all flex flex-col items-center text-center gap-2 group"
-        >
-          <div className="w-12 h-12 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center font-bold group-hover:scale-110 transition-transform">
-            <CreditCard className="w-6 h-6" />
+          <div className="text-3xl font-extrabold text-slate-900">
+            {metrics?.totalPolicies?.toLocaleString() || "1,248"}
           </div>
-          <span className="font-bold text-slate-800 text-xs">Payments</span>
-        </Link>
-
-        <Link
-          to="/claims"
-          className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs hover:border-[#4A2B4B] hover:shadow-md transition-all flex flex-col items-center text-center gap-2 group"
-        >
-          <div className="w-12 h-12 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center font-bold group-hover:scale-110 transition-transform">
-            <FileText className="w-6 h-6" />
+          <div className="flex items-center gap-1.5 text-xs font-bold text-emerald-600">
+            <TrendingUp className="w-3.5 h-3.5" />
+            <span>↑ 12.4% vs last month</span>
           </div>
-          <span className="font-bold text-slate-800 text-xs">Claims</span>
-        </Link>
+        </div>
+
+        {/* Active Policies */}
+        <div className="bg-white p-6 rounded-3xl border border-slate-200/60 shadow-sm space-y-3">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-bold text-slate-400">Active Policies</span>
+            <div className="w-10 h-10 rounded-2xl bg-[#e2f5cf] text-[#0b281a] flex items-center justify-center font-bold">
+              <ShieldCheck className="w-5 h-5" />
+            </div>
+          </div>
+          <div className="text-3xl font-extrabold text-slate-900">
+            {metrics?.activePolicies?.toLocaleString() || "328"}
+          </div>
+          <div className="flex items-center gap-1.5 text-xs font-bold text-emerald-600">
+            <TrendingUp className="w-3.5 h-3.5" />
+            <span>↑ 8.7% vs last month</span>
+          </div>
+        </div>
+
+        {/* Claims Approved */}
+        <div className="bg-white p-6 rounded-3xl border border-slate-200/60 shadow-sm space-y-3">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-bold text-slate-400">Claims Approved</span>
+            <div className="w-10 h-10 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold">
+              <CheckCircle2 className="w-5 h-5" />
+            </div>
+          </div>
+          <div className="text-3xl font-extrabold text-slate-900">
+            {metrics?.approvedClaims || "86"}
+          </div>
+          <div className="flex items-center gap-1.5 text-xs font-bold text-emerald-600">
+            <TrendingUp className="w-3.5 h-3.5" />
+            <span>↑ 15.3% vs last month</span>
+          </div>
+        </div>
+
+        {/* Revenue */}
+        <div className="bg-white p-6 rounded-3xl border border-slate-200/60 shadow-sm space-y-3">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-bold text-slate-400">Revenue</span>
+            <div className="w-10 h-10 rounded-2xl bg-purple-50 text-purple-700 flex items-center justify-center font-bold">
+              <IndianRupee className="w-5 h-5" />
+            </div>
+          </div>
+          <div className="text-3xl font-extrabold text-slate-900">
+            ₹{(metrics?.totalPremiumCollected || 2480000).toLocaleString("en-IN")}
+          </div>
+          <div className="flex items-center gap-1.5 text-xs font-bold text-emerald-600">
+            <TrendingUp className="w-3.5 h-3.5" />
+            <span>↑ 18.6% vs last month</span>
+          </div>
+        </div>
       </div>
 
-      {/* User Account Overview */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-4">
-          <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-            <h3 className="font-bold text-slate-900 text-sm flex items-center gap-2">
-              <User className="w-4 h-4 text-[#4A2B4B]" />
-              Account Overview
-            </h3>
-            <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-[#4A2B4B]/10 text-[#4A2B4B]">
-              {user?.role}
+      {/* Featured Policy Banner & Sales Chart Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        {/* Featured Policy Card */}
+        <div className="lg:col-span-5 bg-white p-6 rounded-3xl border border-slate-200/60 shadow-sm flex flex-col justify-between">
+          <div className="flex items-center justify-between mb-4">
+            <span className="text-xs font-extrabold text-slate-900">Featured Policy</span>
+            <span className="bg-[#e2f5cf] text-[#0b281a] px-3 py-1 rounded-full text-[10px] font-bold">
+              Active Offer
             </span>
           </div>
 
-          <div className="space-y-2.5 text-xs">
-            <div className="flex justify-between py-1">
-              <span className="text-slate-500 font-medium">User ID</span>
-              <span className="font-mono text-slate-700 font-semibold truncate max-w-[140px]">
-                {user?.id}
-              </span>
+          <div className="relative rounded-2xl overflow-hidden mb-4 group h-48">
+            <img
+              src="/auth_hero.png"
+              alt="Policy Hero"
+              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent"></div>
+            <div className="absolute bottom-3 left-4 right-4 text-white">
+              <p className="text-xs font-semibold opacity-80">Health Shield Super Plan</p>
+              <p className="text-lg font-bold">Full Family Coverage</p>
             </div>
-            <div className="flex justify-between py-1">
-              <span className="text-slate-500 font-medium">Email Address</span>
-              <span className="font-semibold text-slate-800">
-                {user?.email}
-              </span>
+          </div>
+
+          <div className="flex items-center justify-between pt-2 border-t border-slate-100">
+            <div>
+              <p className="text-xl font-extrabold text-slate-900">₹75,000 / yr</p>
+              <p className="text-[11px] text-slate-400 font-medium">123 Green Valley, Cyber City</p>
             </div>
-            <div className="flex justify-between py-1 items-center">
-              <span className="text-slate-500 font-medium">Email Status</span>
-              {user?.isEmailVerified ? (
-                <span className="inline-flex items-center gap-1 text-emerald-600 font-bold bg-emerald-50 px-2 py-0.5 rounded-md text-[11px]">
-                  <MailCheck className="w-3 h-3" /> Verified
-                </span>
-              ) : (
-                <span className="inline-flex items-center gap-1 text-amber-600 font-bold bg-amber-50 px-2 py-0.5 rounded-md text-[11px]">
-                  Unverified
-                </span>
-              )}
+            <span className="bg-emerald-50 text-emerald-700 px-3 py-1 rounded-full text-xs font-extrabold">
+              For Sale
+            </span>
+          </div>
+        </div>
+
+        {/* Weekly Revenue Bar Chart Card */}
+        <div className="lg:col-span-7 bg-white p-6 rounded-3xl border border-slate-200/60 shadow-sm flex flex-col justify-between">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-xs font-extrabold text-slate-900">Weekly Revenue Overview</span>
+            <span className="text-xs font-bold text-slate-400 bg-slate-100 px-3 py-1 rounded-xl">
+              This Week
+            </span>
+          </div>
+
+          <RevenueBarChart data={chartData} />
+        </div>
+      </div>
+
+      {/* Market Overview Donut, Agent Activity, & Closing Progress Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        {/* Market Overview Donut */}
+        <div className="lg:col-span-4 bg-white p-6 rounded-3xl border border-slate-200/60 shadow-sm space-y-4">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-extrabold text-slate-900">Policy Breakdown</span>
+            <span className="text-xs font-bold text-[#0b281a] hover:underline cursor-pointer flex items-center gap-0.5">
+              View Report <ArrowUpRight className="w-3 h-3" />
+            </span>
+          </div>
+
+          <PolicyDonutChart
+            active={metrics?.activePolicies || 328}
+            renewed={metrics?.renewedPolicies || 186}
+            expired={metrics?.expiredPolicies || 112}
+            cancelled={metrics?.cancelledPolicies || 45}
+          />
+        </div>
+
+        {/* Agent Activity Feed */}
+        <div className="lg:col-span-4 bg-white p-6 rounded-3xl border border-slate-200/60 shadow-sm space-y-4">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-extrabold text-slate-900">Agent Activity</span>
+            <span className="text-xs font-bold text-slate-400 hover:text-slate-600 cursor-pointer">
+              View All
+            </span>
+          </div>
+
+          <div className="space-y-3.5">
+            <div className="flex items-center justify-between text-xs">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-full bg-emerald-100 text-emerald-800 font-bold flex items-center justify-center text-[10px]">
+                  SM
+                </div>
+                <div>
+                  <p className="font-extrabold text-slate-900">Sophia Mitchell</p>
+                  <p className="text-[11px] text-slate-400">Added a new customer policy</p>
+                </div>
+              </div>
+              <span className="text-[10px] font-bold text-slate-400">10m ago</span>
+            </div>
+
+            <div className="flex items-center justify-between text-xs">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-full bg-blue-100 text-blue-800 font-bold flex items-center justify-center text-[10px]">
+                  EB
+                </div>
+                <div>
+                  <p className="font-extrabold text-slate-900">Ethan Brooks</p>
+                  <p className="text-[11px] text-slate-400">Closed health claim #402</p>
+                </div>
+              </div>
+              <span className="text-[10px] font-bold text-slate-400">1h ago</span>
+            </div>
+
+            <div className="flex items-center justify-between text-xs">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-full bg-purple-100 text-purple-800 font-bold flex items-center justify-center text-[10px]">
+                  OB
+                </div>
+                <div>
+                  <p className="font-extrabold text-slate-900">Olivia Bennett</p>
+                  <p className="text-[11px] text-slate-400">Verified identity documents</p>
+                </div>
+              </div>
+              <span className="text-[10px] font-bold text-slate-400">2h ago</span>
             </div>
           </div>
         </div>
 
-        {/* Customer Profile if present */}
-        {user?.customer && (
-          <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-4 md:col-span-2">
-            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-              <h3 className="font-bold text-slate-900 text-sm flex items-center gap-2">
-                <ShieldCheck className="w-4 h-4 text-[#4A2B4B]" />
-                Customer Profile
-              </h3>
-              <span className="text-xs font-semibold text-slate-400">
-                Policy Holder
-              </span>
-            </div>
+        {/* Claim Approval Progress Semicircular SVG Gauge */}
+        <div className="lg:col-span-4 bg-white p-6 rounded-3xl border border-slate-200/60 shadow-sm flex flex-col justify-between">
+          <span className="text-xs font-extrabold text-slate-900 mb-2">Claim Approval Progress</span>
 
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
-              <div className="p-3 bg-slate-50 rounded-xl space-y-1">
-                <p className="text-slate-400 font-medium flex items-center gap-1">
-                  <Phone className="w-3 h-3" /> Phone
-                </p>
-                <p className="font-bold text-slate-800">
-                  {user.customer.phone}
-                </p>
-              </div>
-              <div className="p-3 bg-slate-50 rounded-xl space-y-1">
-                <p className="text-slate-400 font-medium flex items-center gap-1">
-                  <MapPin className="w-3 h-3" /> Address
-                </p>
-                <p className="font-bold text-slate-800">
-                  {user.customer.address}
-                </p>
-              </div>
-              <div className="p-3 bg-slate-50 rounded-xl space-y-1">
-                <p className="text-slate-400 font-medium flex items-center gap-1">
-                  <Calendar className="w-3 h-3" /> Date of Birth
-                </p>
-                <p className="font-bold text-slate-800">
-                  {new Date(user.customer.dob).toLocaleDateString()}
-                </p>
-              </div>
-            </div>
-          </div>
-        )}
+          <ClaimApprovalGauge
+            percentage={72}
+            approved={metrics?.approvedClaims || 52}
+            verifying={18}
+            pending={metrics?.pendingClaims || 6}
+          />
+        </div>
       </div>
     </DashboardLayout>
   );

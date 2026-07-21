@@ -63,7 +63,6 @@ export const ResetPassword = () => {
     <AuthLayout
       title="Reset Password"
       subtitle="Enter the 6-digit OTP code sent to your email and your new password."
-      showSocial={false}
     >
       <form onSubmit={handleSubmit} className="space-y-4">
         {/* Alerts */}
@@ -92,7 +91,7 @@ export const ResetPassword = () => {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="user@example.com"
-            className="w-full h-11 px-4 rounded-xl border border-slate-200 bg-slate-50/50 text-slate-800 text-sm font-medium focus:bg-white focus:border-[#4A2B4B] outline-none"
+            className="w-full h-11 px-4 rounded-xl border border-slate-200 bg-slate-50/50 text-slate-800 text-sm font-semibold focus:bg-white focus:border-[#0b281a] outline-none"
           />
         </div>
 
@@ -108,7 +107,7 @@ export const ResetPassword = () => {
             value={otp}
             onChange={(e) => setOtp(e.target.value.replace(/\D/g, ""))}
             placeholder="123456"
-            className="w-full h-11 px-4 text-center letter-spacing-4 tracking-widest text-lg font-bold rounded-xl border border-slate-200 bg-slate-50/50 text-[#4A2B4B] focus:bg-white focus:border-[#4A2B4B] outline-none"
+            className="w-full h-11 px-4 text-center letter-spacing-4 tracking-widest text-lg font-bold rounded-xl border border-slate-200 bg-slate-50/50 text-[#0b281a] focus:bg-white focus:border-[#0b281a] outline-none"
           />
         </div>
 
@@ -124,7 +123,7 @@ export const ResetPassword = () => {
               value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
               placeholder="Create strong password"
-              className="w-full h-11 pl-4 pr-11 rounded-xl border border-slate-200 bg-slate-50/50 text-slate-800 text-sm font-medium focus:bg-white focus:border-[#4A2B4B] outline-none"
+              className="w-full h-11 pl-4 pr-11 rounded-xl border border-slate-200 bg-slate-50/50 text-slate-800 text-sm font-semibold focus:bg-white focus:border-[#0b281a] outline-none"
             />
             <button
               type="button"
@@ -150,7 +149,7 @@ export const ResetPassword = () => {
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
             placeholder="Re-enter new password"
-            className="w-full h-11 px-4 rounded-xl border border-slate-200 bg-slate-50/50 text-slate-800 text-sm font-medium focus:bg-white focus:border-[#4A2B4B] outline-none"
+            className="w-full h-11 px-4 rounded-xl border border-slate-200 bg-slate-50/50 text-slate-800 text-sm font-semibold focus:bg-white focus:border-[#0b281a] outline-none"
           />
         </div>
 
@@ -158,7 +157,7 @@ export const ResetPassword = () => {
         <button
           type="submit"
           disabled={loading}
-          className="w-full h-12 mt-2 rounded-xl bg-[#4A2B4B] hover:bg-[#391e3a] text-white font-bold text-sm shadow-md shadow-[#4A2B4B]/25 hover:shadow-lg transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-70"
+          className="w-full h-12 mt-2 rounded-xl bg-[#0b281a] hover:bg-[#061d12] text-white font-extrabold text-xs shadow-md shadow-[#0b281a]/25 hover:shadow-lg transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-70"
         >
           {loading ? (
             <>
@@ -176,7 +175,7 @@ export const ResetPassword = () => {
         {/* Back Link */}
         <div className="text-center text-xs text-slate-500 font-medium pt-1">
           Back to{" "}
-          <Link to="/login" className="font-bold text-[#4A2B4B] hover:underline cursor-pointer">
+          <Link to="/login" className="font-bold text-[#0b281a] hover:underline cursor-pointer">
             Login
           </Link>
         </div>

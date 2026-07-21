@@ -27,7 +27,9 @@ export const ForgotPassword = () => {
       // Navigate to Reset Password page with email prefilled
       navigate("/reset-password", { state: { email } });
     } catch (err) {
-      setError(err.message || "Failed to send reset OTP. Please check your email.");
+      setError(
+        err.message || "Failed to send reset OTP. Please check your email.",
+      );
     } finally {
       setLoading(false);
     }
@@ -37,7 +39,6 @@ export const ForgotPassword = () => {
     <AuthLayout
       title="Forgot Password?"
       subtitle="Enter your registered email address to receive a 6-digit reset OTP code."
-      showSocial={false}
     >
       <form onSubmit={handleSubmit} className="space-y-5">
         {/* Error Alert */}
@@ -60,7 +61,7 @@ export const ForgotPassword = () => {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="user@example.com"
-              className="w-full h-12 pl-11 pr-4 rounded-xl border border-slate-200 bg-slate-50/50 text-slate-800 text-sm font-medium focus:bg-white focus:border-[#4A2B4B] focus:ring-4 focus:ring-[#4A2B4B]/10 outline-none transition-all"
+              className="w-full h-12 pl-11 pr-4 rounded-xl border border-slate-200 bg-slate-50/50 text-slate-800 text-sm font-semibold focus:bg-white focus:border-[#0b281a] focus:ring-4 focus:ring-[#0b281a]/10 outline-none transition-all"
             />
             <Mail className="w-4 h-4 text-slate-400 absolute left-4 top-1/2 -translate-y-1/2" />
           </div>
@@ -70,7 +71,7 @@ export const ForgotPassword = () => {
         <button
           type="submit"
           disabled={loading}
-          className="w-full h-12 rounded-xl bg-[#4A2B4B] hover:bg-[#391e3a] text-white font-bold text-sm shadow-md shadow-[#4A2B4B]/25 hover:shadow-lg transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-70"
+          className="w-full h-12 rounded-xl bg-[#0b281a] hover:bg-[#061d12] text-white font-extrabold text-xs shadow-md shadow-[#0b281a]/25 hover:shadow-lg transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-70"
         >
           {loading ? (
             <>
@@ -90,7 +91,7 @@ export const ForgotPassword = () => {
           Remembered your password?{" "}
           <Link
             to="/login"
-            className="font-bold text-[#4A2B4B] hover:underline cursor-pointer ml-1"
+            className="font-bold text-[#0b281a] hover:underline cursor-pointer ml-1"
           >
             Back to Login
           </Link>

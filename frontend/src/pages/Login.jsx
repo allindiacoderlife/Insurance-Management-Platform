@@ -40,7 +40,7 @@ export const Login = () => {
   return (
     <AuthLayout
       title="Welcome Back"
-      subtitle="Let's login to grab amazing deal and manage your policies."
+      subtitle="Login to manage your insurance policies, claims, and premium payments."
     >
       <form onSubmit={handleSubmit} className="space-y-4">
         {/* Error Alert */}
@@ -54,15 +54,15 @@ export const Login = () => {
         {/* Email Field */}
         <div className="space-y-1">
           <label className="text-xs font-semibold text-slate-600 block pl-1">
-            Email
+            Email Address
           </label>
           <input
             type="email"
             required
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            placeholder="rownok@gmail.com"
-            className="w-full h-12 px-4 rounded-xl border border-slate-200 bg-slate-50/50 text-slate-800 text-sm font-medium focus:bg-white focus:border-[#4A2B4B] focus:ring-4 focus:ring-[#4A2B4B]/10 outline-none transition-all duration-200"
+            placeholder="admin@havenix.com"
+            className="w-full h-12 px-4 rounded-xl border border-slate-200 bg-slate-50/50 text-slate-800 text-sm font-semibold focus:bg-white focus:border-[#0b281a] focus:ring-4 focus:ring-[#0b281a]/10 outline-none transition-all duration-200"
           />
         </div>
 
@@ -78,7 +78,7 @@ export const Login = () => {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="••••••••••••"
-              className="w-full h-12 pl-4 pr-11 rounded-xl border border-slate-200 bg-slate-50/50 text-slate-800 text-sm font-medium focus:bg-white focus:border-[#4A2B4B] focus:ring-4 focus:ring-[#4A2B4B]/10 outline-none transition-all duration-200"
+              className="w-full h-12 pl-4 pr-11 rounded-xl border border-slate-200 bg-slate-50/50 text-slate-800 text-sm font-semibold focus:bg-white focus:border-[#0b281a] focus:ring-4 focus:ring-[#0b281a]/10 outline-none transition-all duration-200"
             />
             <button
               type="button"
@@ -101,13 +101,13 @@ export const Login = () => {
               type="checkbox"
               checked={rememberMe}
               onChange={(e) => setRememberMe(e.target.checked)}
-              className="w-4 h-4 rounded border-slate-300 text-[#4A2B4B] focus:ring-[#4A2B4B]/20 cursor-pointer accent-[#4A2B4B]"
+              className="w-4 h-4 rounded border-slate-300 text-[#0b281a] focus:ring-[#0b281a]/20 cursor-pointer accent-[#0b281a]"
             />
             <span>Remember me</span>
           </label>
           <Link
             to="/forgot-password"
-            className="font-bold text-[#4A2B4B] hover:underline cursor-pointer transition-all"
+            className="font-bold text-[#0b281a] hover:underline cursor-pointer transition-all"
           >
             Forgot Password?
           </Link>
@@ -117,7 +117,7 @@ export const Login = () => {
         <button
           type="submit"
           disabled={loading}
-          className="w-full h-12 mt-2 rounded-xl bg-[#4A2B4B] hover:bg-[#391e3a] text-white font-bold text-sm shadow-md shadow-[#4A2B4B]/25 hover:shadow-lg transition-all duration-200 flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed cursor-pointer"
+          className="w-full h-12 mt-2 rounded-xl bg-[#0b281a] hover:bg-[#061d12] text-white font-extrabold text-xs shadow-md shadow-[#0b281a]/25 hover:shadow-lg transition-all duration-200 flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed cursor-pointer"
         >
           {loading ? (
             <>
@@ -134,7 +134,7 @@ export const Login = () => {
           Don't have an account?{" "}
           <Link
             to="/register"
-            className="font-bold text-[#4A2B4B] hover:underline cursor-pointer ml-1"
+            className="font-bold text-[#0b281a] hover:underline cursor-pointer ml-1"
           >
             Sign Up
           </Link>
