@@ -1,10 +1,27 @@
 import prisma from "../lib/prisma.js";
 import asyncHandler from "../utils/asyncHandler.js";
 
-// @desc    Get aggregate metrics & statistics for Reports Dashboard
+// @desc    Get aggregate metrics & statistics for Reports & Dashboard
 // @route   GET /api/v1/reports/summary
-// @access  Protected (ADMIN, AGENT)
+// @access  Protected (ADMIN, AGENT, CUSTOMER)
 export const getDashboardSummary = asyncHandler(async (req, res) => {
+  let policyWhere = {};
+  let claimWhere = {};
+  let paymentWhere = { paymentStatus: "PAID" };
+
+  // If role is CUSTOMER, filter metrics to customer's own policies and claims
+  if (req.user.role === "CUSTOMER") {
+    const customer = await prisma.customer.findUnique({
+      where: { userId: req.user.id },
+    });
+
+    if (customer) {
+      policyWhere.customerId = customer.id;
+      claimWhere.policy = { customerId: customer.id };
+      paymentWhere.policy = { customerId: customer.id };
+    }
+  }
+
   const [
     totalCustomers,
     totalPolicies,
@@ -18,18 +35,18 @@ export const getDashboardSummary = asyncHandler(async (req, res) => {
     rejectedClaims,
     premiumPayments,
   ] = await Promise.all([
-    prisma.customer.count(),
-    prisma.policy.count(),
-    prisma.policy.count({ where: { status: "ACTIVE" } }),
-    prisma.policy.count({ where: { status: "EXPIRED" } }),
-    prisma.policy.count({ where: { status: "CANCELLED" } }),
-    prisma.policy.count({ where: { status: "RENEWED" } }),
-    prisma.claim.count(),
-    prisma.claim.count({ where: { status: "PENDING" } }),
-    prisma.claim.count({ where: { status: "APPROVED" } }),
-    prisma.claim.count({ where: { status: "REJECTED" } }),
+    req.user.role === "CUSTOMER" ? 1 : prisma.customer.count(),
+    prisma.policy.count({ where: policyWhere }),
+    prisma.policy.count({ where: { ...policyWhere, status: "ACTIVE" } }),
+    prisma.policy.count({ where: { ...policyWhere, status: "EXPIRED" } }),
+    prisma.policy.count({ where: { ...policyWhere, status: "CANCELLED" } }),
+    prisma.policy.count({ where: { ...policyWhere, status: "RENEWED" } }),
+    prisma.claim.count({ where: claimWhere }),
+    prisma.claim.count({ where: { ...claimWhere, status: "PENDING" } }),
+    prisma.claim.count({ where: { ...claimWhere, status: "APPROVED" } }),
+    prisma.claim.count({ where: { ...claimWhere, status: "REJECTED" } }),
     prisma.premiumPayment.aggregate({
-      where: { paymentStatus: "PAID" },
+      where: paymentWhere,
       _sum: { amount: true },
     }),
   ]);
@@ -38,7 +55,7 @@ export const getDashboardSummary = asyncHandler(async (req, res) => {
 
   // Monthly breakdown for analytics chart
   const recentPayments = await prisma.premiumPayment.findMany({
-    where: { paymentStatus: "PAID" },
+    where: paymentWhere,
     select: { amount: true, paymentDate: true },
     orderBy: { paymentDate: "asc" },
   });

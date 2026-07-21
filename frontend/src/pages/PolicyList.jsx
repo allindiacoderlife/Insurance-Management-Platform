@@ -51,6 +51,7 @@ export const PolicyList = () => {
   };
 
   const fetchCustomersList = async () => {
+    if (user?.role !== "ADMIN" && user?.role !== "AGENT") return;
     try {
       const res = await api.get("/customers?limit=100");
       setCustomers(res.data.data.customers);
@@ -64,8 +65,10 @@ export const PolicyList = () => {
   }, [statusFilter, search]);
 
   useEffect(() => {
-    fetchCustomersList();
-  }, []);
+    if (user?.role === "ADMIN" || user?.role === "AGENT") {
+      fetchCustomersList();
+    }
+  }, [user?.role]);
 
   const handleCreateSubmit = async (e) => {
     e.preventDefault();

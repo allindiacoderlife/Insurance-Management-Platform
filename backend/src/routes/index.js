@@ -6,6 +6,7 @@ import paymentRoutes from "./payment.routes.js";
 import claimRoutes from "./claim.routes.js";
 import documentRoutes from "./document.routes.js";
 import reportRoutes from "./report.routes.js";
+import agentRoutes from "./agent.routes.js";
 
 const router = Router();
 
@@ -16,5 +17,6 @@ router.use("/payments", paymentRoutes);
 router.use("/claims", claimRoutes);
 router.use("/documents", documentRoutes);
 router.use("/reports", reportRoutes);
+router.use("/agents", agentRoutes);
 
 export default router;

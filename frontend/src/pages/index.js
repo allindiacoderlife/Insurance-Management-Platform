@@ -13,3 +13,5 @@ export { ReportsDashboard } from "./ReportsDashboard";
 export { Profile } from "./Profile";
 export { AccountSettings } from "./AccountSettings";
 export { UpgradePlan } from "./UpgradePlan";
+export { ActivityLog } from "./ActivityLog";
+export { AgentManager } from "./AgentManager";

@@ -4,11 +4,16 @@ export const errorHandler = (
   res,
   next
 ) => {
-  const errorMessage = err.message || (typeof err === "string" ? err : "Unknown Error");
-  console.error("❌ Backend Error Details:");
-  console.dir(err, { depth: null }); // This will print EVERYTHING in the error object
-
   const statusCode = err.statusCode || 500;
+  const errorMessage = err.message || (typeof err === "string" ? err : "Unknown Error");
+
+  // Log clean 1-liner for expected 4xx client errors (401, 403, 404, 400)
+  if (statusCode >= 400 && statusCode < 500) {
+    console.warn(`⚠️ [HTTP ${statusCode}] ${req.method} ${req.originalUrl || req.url} - ${errorMessage}`);
+  } else {
+    console.error(`❌ [HTTP ${statusCode}] Server Error:`, err);
+  }
+
   res.status(statusCode).json({
     success: false,
     message: errorMessage,

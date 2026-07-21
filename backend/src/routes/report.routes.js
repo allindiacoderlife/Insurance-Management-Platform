@@ -6,6 +6,6 @@ import { cacheMiddleware } from "../utils/cache.js";
 const router = Router();
 
 router.use(authenticate);
-router.get("/summary", authorize("ADMIN", "AGENT"), cacheMiddleware("reports", 120), getDashboardSummary);
+router.get("/summary", authorize("ADMIN", "AGENT", "CUSTOMER"), cacheMiddleware("reports", 120), getDashboardSummary);
 
 export default router;

@@ -2,11 +2,13 @@ import { NavLink, Link } from "react-router-dom";
 import {
   LayoutDashboard,
   Users,
+  UserCheck,
   ShieldCheck,
   CreditCard,
   FileText,
   FolderOpen,
   BarChart3,
+  Activity,
   Shield,
   Sparkles,
   ArrowUpRight,
@@ -20,10 +22,12 @@ export const Sidebar = ({ mobileOpen, setMobileOpen }) => {
   const navItems = [
     { label: "Dashboard", path: "/dashboard", icon: LayoutDashboard, roles: ["ADMIN", "AGENT", "CUSTOMER"] },
     { label: "Customers", path: "/customers", icon: Users, roles: ["ADMIN", "AGENT"] },
+    { label: "Agent Controls", path: "/agents", icon: UserCheck, roles: ["ADMIN"] },
     { label: "Policies", path: "/policies", icon: ShieldCheck, roles: ["ADMIN", "AGENT", "CUSTOMER"] },
     { label: "Payments", path: "/payments", icon: CreditCard, roles: ["ADMIN", "AGENT", "CUSTOMER"] },
     { label: "Claims", path: "/claims", icon: FileText, roles: ["ADMIN", "AGENT", "CUSTOMER"] },
     { label: "Documents", path: "/documents", icon: FolderOpen, roles: ["ADMIN", "AGENT", "CUSTOMER"] },
+    { label: "Activity Logs", path: "/activity", icon: Activity, roles: ["ADMIN", "AGENT", "CUSTOMER"] },
     { label: "Reports", path: "/reports", icon: BarChart3, roles: ["ADMIN", "AGENT"] },
   ];
 

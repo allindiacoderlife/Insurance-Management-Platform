@@ -1,11 +1,11 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Sidebar } from "./Sidebar";
 import { useAuth } from "../context/AuthContext";
+import api from "../api/axios";
 import {
   Search,
   Plus,
   Bell,
-  MessageSquare,
   LogOut,
   User,
   Settings,
@@ -17,6 +17,7 @@ import {
   CreditCard,
   FolderCheck,
   CheckCheck,
+  Trash2,
 } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 
@@ -27,50 +28,159 @@ export const DashboardLayout = ({ children, title, subtitle, onAddNew }) => {
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
 
-  // Demo Notifications State
-  const [notificationsList, setNotificationsList] = useState([
-    {
-      id: 1,
-      title: "Policy Expiration Alert",
-      desc: "Auto Policy POL-202607-1002 is expiring in 15 days. Customer: Rahul Sharma.",
-      time: "10m ago",
-      type: "policy",
-      read: false,
-      link: "/policies",
-    },
-    {
-      id: 2,
-      title: "New Claim Submission",
-      desc: "Health claim #402 submitted for ₹85,000 requiring verification.",
-      time: "1h ago",
-      type: "claim",
-      read: false,
-      link: "/claims",
-    },
-    {
-      id: 3,
-      title: "Overdue Premium Payment",
-      desc: "Payment of ₹50,000 for policy POL-202607-1003 is overdue.",
-      time: "3h ago",
-      type: "payment",
-      read: false,
-      link: "/payments",
-    },
-    {
-      id: 4,
-      title: "Document Verified",
-      desc: "Aadhaar ID proof document verified for Chirag Saxena.",
-      time: "1d ago",
-      type: "document",
-      read: true,
-      link: "/documents",
-    },
-  ]);
+  const userId = user?.id || "guest";
+  const readStorageKey = `havenix_read_notes_${userId}`;
+  const clearedStorageKey = `havenix_cleared_notes_${userId}`;
+
+  // Helper to load read IDs from localStorage
+  const getStoredReadIds = () => {
+    try {
+      const stored = localStorage.getItem(readStorageKey);
+      return stored ? JSON.parse(stored) : [];
+    } catch {
+      return [];
+    }
+  };
+
+  // Helper to load cleared status from localStorage
+  const isClearedAllStored = () => {
+    return localStorage.getItem(clearedStorageKey) === "true";
+  };
+
+  // Notifications State
+  const [notificationsList, setNotificationsList] = useState([]);
+
+  // Fetch real policies & claims and synchronize with localStorage
+  useEffect(() => {
+    const fetchRealNotifications = async () => {
+      // If user previously clicked Clear All, keep notification list empty
+      if (isClearedAllStored()) {
+        setNotificationsList([]);
+        return;
+      }
+
+      try {
+        const [policiesRes, claimsRes] = await Promise.allSettled([
+          api.get("/policies?limit=3"),
+          api.get("/claims?limit=3"),
+        ]);
+
+        const rawNotes = [];
+
+        if (
+          policiesRes.status === "fulfilled" &&
+          policiesRes.value.data.data.policies
+        ) {
+          policiesRes.value.data.data.policies.forEach((p) => {
+            rawNotes.push({
+              id: `pol-${p.id}`,
+              title: `Policy: ${p.policyNumber}`,
+              desc: `${p.type} Policy (${p.status}) - ₹${p.premiumAmount.toLocaleString("en-IN")}/yr`,
+              time: new Date(p.createdAt || Date.now()).toLocaleDateString(),
+              type: "policy",
+              read: false,
+              link: "/policies",
+            });
+          });
+        }
+
+        if (
+          claimsRes.status === "fulfilled" &&
+          claimsRes.value.data.data.claims
+        ) {
+          claimsRes.value.data.data.claims.forEach((c) => {
+            rawNotes.push({
+              id: `claim-${c.id}`,
+              title: `Claim #${c.claimNumber}`,
+              desc: `Amount ₹${c.claimAmount.toLocaleString("en-IN")} - Status: ${c.status}`,
+              time: new Date(c.incidentDate || Date.now()).toLocaleDateString(),
+              type: "claim",
+              read: false,
+              link: "/claims",
+            });
+          });
+        }
+
+        // Fallback default notifications if database yields none
+        const baseNotes =
+          rawNotes.length > 0
+            ? rawNotes
+            : [
+                {
+                  id: "demo-1",
+                  title: "Policy Expiration Alert",
+                  desc: "Health Policy POL-202607-1001 renewal due in 15 days.",
+                  time: "10m ago",
+                  type: "policy",
+                  read: false,
+                  link: "/policies",
+                },
+                {
+                  id: "demo-2",
+                  title: "New Claim Submission",
+                  desc: "Health claim #402 submitted requiring verification.",
+                  time: "1h ago",
+                  type: "claim",
+                  read: false,
+                  link: "/claims",
+                },
+                {
+                  id: "demo-3",
+                  title: "Premium Payment Received",
+                  desc: "Payment of ₹25,000 received for policy POL-202607-1001.",
+                  time: "3h ago",
+                  type: "payment",
+                  read: false,
+                  link: "/payments",
+                },
+              ];
+
+        // Apply persistent read state from localStorage
+        const readIds = getStoredReadIds();
+        const syncedNotes = baseNotes.map((n) => ({
+          ...n,
+          read: readIds.includes(n.id),
+        }));
+
+        setNotificationsList(syncedNotes);
+      } catch (err) {
+        console.error("Failed to load notifications", err);
+      }
+    };
+
+    if (user) {
+      fetchRealNotifications();
+    }
+  }, [user]);
 
   const unreadCount = notificationsList.filter((n) => !n.read).length;
 
-  const markAllAsRead = () => {
+  const markAllAsRead = (e) => {
+    e.stopPropagation();
+    const allIds = notificationsList.map((n) => n.id);
+    localStorage.setItem(readStorageKey, JSON.stringify(allIds));
+    localStorage.removeItem(clearedStorageKey);
     setNotificationsList((prev) => prev.map((n) => ({ ...n, read: true })));
+  };
+
+  const clearAllNotifications = (e) => {
+    e.stopPropagation();
+    localStorage.setItem(clearedStorageKey, "true");
+    setNotificationsList([]);
+  };
+
+  const markSingleAsRead = (id, link) => {
+    const currentReadIds = getStoredReadIds();
+    if (!currentReadIds.includes(id)) {
+      const updatedReadIds = [...currentReadIds, id];
+      localStorage.setItem(readStorageKey, JSON.stringify(updatedReadIds));
+    }
+
+    setNotificationsList((prev) =>
+      prev.map((n) => (n.id === id ? { ...n, read: true } : n)),
+    );
+    setShowNotifications(false);
+    navigate(link);
   };
 
   const handleAddNewClick = () => {
@@ -114,7 +224,7 @@ export const DashboardLayout = ({ children, title, subtitle, onAddNew }) => {
       <div className="flex-1 flex flex-col min-w-0 w-full">
         {/* Top Header */}
         <header className="sticky top-0 z-30 h-16 sm:h-20 px-4 sm:px-8 flex items-center justify-between bg-[#f7f8f4]/90 backdrop-blur-md border-b border-slate-200/50 gap-2">
-          {/* Mobile Hamburger & Brand Icon */}
+          {/* Mobile Hamburger & Search Input */}
           <div className="flex items-center gap-3">
             <button
               onClick={() => setMobileOpen(true)}
@@ -156,10 +266,11 @@ export const DashboardLayout = ({ children, title, subtitle, onAddNew }) => {
                   setShowProfileMenu(false);
                 }}
                 className="w-9 h-9 sm:w-11 sm:h-11 rounded-2xl bg-white border border-slate-200/80 text-slate-600 hover:text-slate-900 hover:bg-slate-50 flex items-center justify-center relative shadow-xs cursor-pointer transition-colors"
+                title="Notifications"
               >
                 <Bell className="w-4 h-4" />
                 {unreadCount > 0 && (
-                  <span className="absolute top-2 right-2 sm:top-2.5 sm:right-2.5 w-2 h-2 rounded-full bg-emerald-500 ring-2 ring-white"></span>
+                  <span className="absolute top-2 right-2 sm:top-2.5 sm:right-2.5 w-2.5 h-2.5 rounded-full bg-emerald-500 ring-2 ring-white animate-pulse"></span>
                 )}
               </button>
 
@@ -177,75 +288,85 @@ export const DashboardLayout = ({ children, title, subtitle, onAddNew }) => {
                         </span>
                       )}
                     </div>
-                    {unreadCount > 0 && (
-                      <button
-                        onClick={markAllAsRead}
-                        className="text-[11px] font-bold text-[#0b281a] hover:underline flex items-center gap-1 cursor-pointer"
-                      >
-                        <CheckCheck className="w-3.5 h-3.5 text-emerald-600" />
-                        <span>Mark all as read</span>
-                      </button>
-                    )}
+
+                    <div className="flex items-center gap-3">
+                      {unreadCount > 0 && (
+                        <button
+                          onClick={markAllAsRead}
+                          className="text-[11px] font-bold text-[#0b281a] hover:underline flex items-center gap-1 cursor-pointer"
+                        >
+                          <CheckCheck className="w-3.5 h-3.5 text-emerald-600" />
+                          <span>Mark read</span>
+                        </button>
+                      )}
+
+                      {notificationsList.length > 0 && (
+                        <button
+                          onClick={clearAllNotifications}
+                          className="text-[11px] font-bold text-rose-600 hover:underline flex items-center gap-1 cursor-pointer"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                          <span>Clear all</span>
+                        </button>
+                      )}
+                    </div>
                   </div>
 
                   {/* Notification Items */}
-                  <div className="space-y-2">
-                    {notificationsList.map((n) => (
-                      <div
-                        key={n.id}
-                        onClick={() => {
-                          setShowNotifications(false);
-                          navigate(n.link);
-                        }}
-                        className={`p-3 rounded-2xl border transition-all cursor-pointer flex items-start gap-3 ${
-                          n.read
-                            ? "bg-white border-slate-100 hover:bg-slate-50/80 opacity-75"
-                            : "bg-emerald-50/40 border-emerald-100 hover:bg-emerald-50/80 shadow-xs"
-                        }`}
-                      >
-                        <div className="w-8 h-8 rounded-xl bg-white border border-slate-200/80 flex items-center justify-center shrink-0 shadow-xs">
-                          {getNotificationIcon(n.type)}
-                        </div>
-                        <div className="flex-1 space-y-0.5">
-                          <div className="flex items-center justify-between">
-                            <p className="text-xs font-extrabold text-slate-900">
-                              {n.title}
-                            </p>
-                            <span className="text-[10px] font-semibold text-slate-400">
-                              {n.time}
-                            </span>
+                  {notificationsList.length === 0 ? (
+                    <div className="py-8 text-center space-y-2">
+                      <Bell className="w-8 h-8 text-slate-300 mx-auto" />
+                      <p className="text-xs font-semibold text-slate-400">
+                        No notifications at this time
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="space-y-2">
+                      {notificationsList.map((n) => (
+                        <div
+                          key={n.id}
+                          onClick={() => markSingleAsRead(n.id, n.link)}
+                          className={`p-3 rounded-2xl border transition-all cursor-pointer flex items-start gap-3 ${
+                            n.read
+                              ? "bg-white border-slate-100 hover:bg-slate-50/80 opacity-75"
+                              : "bg-emerald-50/40 border-emerald-100 hover:bg-emerald-50/80 shadow-xs"
+                          }`}
+                        >
+                          <div className="w-8 h-8 rounded-xl bg-white border border-slate-200/80 flex items-center justify-center shrink-0 shadow-xs">
+                            {getNotificationIcon(n.type)}
                           </div>
-                          <p className="text-[11px] text-slate-600 font-medium leading-snug">
-                            {n.desc}
-                          </p>
+                          <div className="flex-1 space-y-0.5">
+                            <div className="flex items-center justify-between">
+                              <p className="text-xs font-extrabold text-slate-900">
+                                {n.title}
+                              </p>
+                              <span className="text-[10px] font-semibold text-slate-400">
+                                {n.time}
+                              </span>
+                            </div>
+                            <p className="text-[11px] text-slate-600 font-medium leading-snug">
+                              {n.desc}
+                            </p>
+                          </div>
                         </div>
-                      </div>
-                    ))}
-                  </div>
+                      ))}
+                    </div>
+                  )}
 
                   <div className="pt-2 border-t border-slate-100 text-center">
                     <button
                       onClick={() => {
                         setShowNotifications(false);
-                        navigate("/dashboard");
+                        navigate("/activity");
                       }}
                       className="text-xs font-bold text-[#0b281a] hover:underline cursor-pointer"
                     >
-                      View All Activity
+                      View All Activity Logs &rarr;
                     </button>
                   </div>
                 </div>
               )}
             </div>
-
-            {/* Messages Icon */}
-            <button
-              onClick={() => alert("Messages: 2 unread client threads")}
-              className="w-9 h-9 sm:w-11 sm:h-11 rounded-2xl bg-white border border-slate-200/80 text-slate-600 hover:text-slate-900 hover:bg-slate-50 flex items-center justify-center relative shadow-xs cursor-pointer"
-            >
-              <MessageSquare className="w-4 h-4" />
-              <span className="absolute top-2 right-2 sm:top-2.5 sm:right-2.5 w-2 h-2 rounded-full bg-emerald-500 ring-2 ring-white"></span>
-            </button>
 
             {/* Profile Avatar & Dropdown */}
             <div className="relative">

@@ -16,6 +16,8 @@ import {
   Profile,
   AccountSettings,
   UpgradePlan,
+  ActivityLog,
+  AgentManager,
 } from "./pages";
 
 // Protected Route Wrapper
@@ -74,6 +76,8 @@ const App = () => {
       <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
       <Route path="/settings" element={<ProtectedRoute><AccountSettings /></ProtectedRoute>} />
       <Route path="/upgrade-plan" element={<ProtectedRoute><UpgradePlan /></ProtectedRoute>} />
+      <Route path="/activity" element={<ProtectedRoute><ActivityLog /></ProtectedRoute>} />
+      <Route path="/agents" element={<ProtectedRoute><AgentManager /></ProtectedRoute>} />
 
       <Route path="*" element={<Navigate to="/login" replace />} />
     </Routes>
