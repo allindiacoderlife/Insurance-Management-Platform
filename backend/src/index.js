@@ -7,7 +7,7 @@ import { errorHandler } from "./middleware/errorHandler.js";
 
 import apiRoutes from "./routes/index.js";
 
-const PORT = config.port;
+const PORT = config.port || 8000;
 
 const app = express();
 //! ─── Middleware ────────────────────────────────────────────
@@ -17,7 +17,8 @@ app.use(
       if (
         !origin ||
         config.corsOrigins.includes(origin) ||
-        config.nodeEnv === "development" // Allow all origins in dev (including mobile IPs)
+        config.nodeEnv === "development" ||
+        process.env.VERCEL === "1"
       ) {
         callback(null, true);
       } else {
@@ -62,6 +63,10 @@ app.use("/api/v1", apiRoutes);
 app.use(errorHandler);
 
 //! ─── App Listen ────────────────────────────────────────────
-app.listen(PORT, () => {
-  console.log(`🚀 Server running on port ${PORT}`);
-});
+if (process.env.VERCEL !== "1") {
+  app.listen(PORT, () => {
+    console.log(`🚀 Server running on port ${PORT}`);
+  });
+}
+
+export default app;
