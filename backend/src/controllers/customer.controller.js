@@ -1,6 +1,7 @@
 import prisma from "../lib/prisma.js";
 import ApiError from "../utils/ApiError.js";
 import asyncHandler from "../utils/asyncHandler.js";
+import { cache } from "../utils/cache.js";
 
 // @desc    Get all customers with search and pagination
 // @route   GET /api/v1/customers
@@ -111,6 +112,13 @@ export const createCustomer = asyncHandler(async (req, res) => {
     },
   });
 
+  // Invalidate Cache
+  await Promise.all([
+    cache.del("customers"),
+    cache.del("customer_detail"),
+    cache.del("reports"),
+  ]);
+
   return res.status(201).json({
     success: true,
     message: "Customer created successfully",
@@ -148,6 +156,13 @@ export const updateCustomer = asyncHandler(async (req, res) => {
     },
   });
 
+  // Invalidate Cache
+  await Promise.all([
+    cache.del("customers"),
+    cache.del("customer_detail"),
+    cache.del("reports"),
+  ]);
+
   return res.status(200).json({
     success: true,
     message: "Customer updated successfully",
@@ -167,6 +182,13 @@ export const deleteCustomer = asyncHandler(async (req, res) => {
   }
 
   await prisma.customer.delete({ where: { id } });
+
+  // Invalidate Cache
+  await Promise.all([
+    cache.del("customers"),
+    cache.del("customer_detail"),
+    cache.del("reports"),
+  ]);
 
   return res.status(200).json({
     success: true,

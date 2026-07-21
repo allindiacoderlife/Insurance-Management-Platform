@@ -13,6 +13,7 @@ import {
   createPolicySchema,
   renewPolicySchema,
 } from "../validations/policy.validation.js";
+import { cacheMiddleware } from "../utils/cache.js";
 
 const router = Router();
 
@@ -20,12 +21,12 @@ router.use(authenticate);
 
 router
   .route("/")
-  .get(getAllPolicies)
+  .get(cacheMiddleware("policies", 120), getAllPolicies)
   .post(authorize("ADMIN", "AGENT"), validate(createPolicySchema), createPolicy);
 
 router
   .route("/:id")
-  .get(getPolicyById)
+  .get(cacheMiddleware("policy_detail", 120), getPolicyById)
   .delete(authorize("ADMIN"), deletePolicy);
 
 router

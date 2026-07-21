@@ -1,6 +1,7 @@
 import prisma from "../lib/prisma.js";
 import ApiError from "../utils/ApiError.js";
 import asyncHandler from "../utils/asyncHandler.js";
+import { cache } from "../utils/cache.js";
 
 // @desc    Get all premium payments
 // @route   GET /api/v1/payments
@@ -96,6 +97,12 @@ export const recordPayment = asyncHandler(async (req, res) => {
     },
   });
 
+  // Invalidate Cache
+  await Promise.all([
+    cache.del("payments"),
+    cache.del("reports"),
+  ]);
+
   return res.status(201).json({
     success: true,
     message: "Premium payment recorded successfully",
@@ -119,6 +126,12 @@ export const updatePaymentStatus = asyncHandler(async (req, res) => {
     where: { id },
     data: { paymentStatus },
   });
+
+  // Invalidate Cache
+  await Promise.all([
+    cache.del("payments"),
+    cache.del("reports"),
+  ]);
 
   return res.status(200).json({
     success: true,

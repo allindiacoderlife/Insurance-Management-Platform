@@ -12,6 +12,7 @@ import {
   submitClaimSchema,
   updateClaimStatusSchema,
 } from "../validations/claim.validation.js";
+import { cacheMiddleware } from "../utils/cache.js";
 
 const router = Router();
 
@@ -19,12 +20,12 @@ router.use(authenticate);
 
 router
   .route("/")
-  .get(getAllClaims)
+  .get(cacheMiddleware("claims", 120), getAllClaims)
   .post(validate(submitClaimSchema), submitClaim);
 
 router
   .route("/:id")
-  .get(getClaimById)
+  .get(cacheMiddleware("claim_detail", 120), getClaimById)
   .delete(authorize("ADMIN"), deleteClaim);
 
 router

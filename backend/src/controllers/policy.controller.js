@@ -1,6 +1,7 @@
 import prisma from "../lib/prisma.js";
 import ApiError from "../utils/ApiError.js";
 import asyncHandler from "../utils/asyncHandler.js";
+import { cache } from "../utils/cache.js";
 
 // Helper to generate unique policy number
 function generatePolicyNumber() {
@@ -122,6 +123,13 @@ export const createPolicy = asyncHandler(async (req, res) => {
     include: { customer: true },
   });
 
+  // Invalidate Cache
+  await Promise.all([
+    cache.del("policies"),
+    cache.del("policy_detail"),
+    cache.del("reports"),
+  ]);
+
   return res.status(201).json({
     success: true,
     message: "Insurance policy created successfully",
@@ -151,6 +159,13 @@ export const renewPolicy = asyncHandler(async (req, res) => {
     include: { customer: true },
   });
 
+  // Invalidate Cache
+  await Promise.all([
+    cache.del("policies"),
+    cache.del("policy_detail"),
+    cache.del("reports"),
+  ]);
+
   return res.status(200).json({
     success: true,
     message: "Policy renewed successfully",
@@ -174,6 +189,13 @@ export const cancelPolicy = asyncHandler(async (req, res) => {
     data: { status: "CANCELLED" },
   });
 
+  // Invalidate Cache
+  await Promise.all([
+    cache.del("policies"),
+    cache.del("policy_detail"),
+    cache.del("reports"),
+  ]);
+
   return res.status(200).json({
     success: true,
     message: "Policy cancelled successfully",
@@ -193,6 +215,13 @@ export const deletePolicy = asyncHandler(async (req, res) => {
   }
 
   await prisma.policy.delete({ where: { id } });
+
+  // Invalidate Cache
+  await Promise.all([
+    cache.del("policies"),
+    cache.del("policy_detail"),
+    cache.del("reports"),
+  ]);
 
   return res.status(200).json({
     success: true,

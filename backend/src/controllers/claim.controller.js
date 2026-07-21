@@ -1,6 +1,7 @@
 import prisma from "../lib/prisma.js";
 import ApiError from "../utils/ApiError.js";
 import asyncHandler from "../utils/asyncHandler.js";
+import { cache } from "../utils/cache.js";
 
 // @desc    Get all claims with status filter & pagination
 // @route   GET /api/v1/claims
@@ -133,6 +134,13 @@ export const submitClaim = asyncHandler(async (req, res) => {
     },
   });
 
+  // Invalidate Cache
+  await Promise.all([
+    cache.del("claims"),
+    cache.del("claim_detail"),
+    cache.del("reports"),
+  ]);
+
   return res.status(201).json({
     success: true,
     message: "Insurance claim submitted successfully. Status is currently PENDING review.",
@@ -160,6 +168,13 @@ export const updateClaimStatus = asyncHandler(async (req, res) => {
     },
   });
 
+  // Invalidate Cache
+  await Promise.all([
+    cache.del("claims"),
+    cache.del("claim_detail"),
+    cache.del("reports"),
+  ]);
+
   return res.status(200).json({
     success: true,
     message: `Claim status updated to ${status}`,
@@ -179,6 +194,13 @@ export const deleteClaim = asyncHandler(async (req, res) => {
   }
 
   await prisma.claim.delete({ where: { id } });
+
+  // Invalidate Cache
+  await Promise.all([
+    cache.del("claims"),
+    cache.del("claim_detail"),
+    cache.del("reports"),
+  ]);
 
   return res.status(200).json({
     success: true,

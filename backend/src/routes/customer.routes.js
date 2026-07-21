@@ -12,6 +12,7 @@ import {
   createCustomerSchema,
   updateCustomerSchema,
 } from "../validations/customer.validation.js";
+import { cacheMiddleware } from "../utils/cache.js";
 
 const router = Router();
 
@@ -20,12 +21,12 @@ router.use(authenticate);
 
 router
   .route("/")
-  .get(authorize("ADMIN", "AGENT"), getAllCustomers)
+  .get(authorize("ADMIN", "AGENT"), cacheMiddleware("customers", 120), getAllCustomers)
   .post(authorize("ADMIN", "AGENT"), validate(createCustomerSchema), createCustomer);
 
 router
   .route("/:id")
-  .get(getCustomerById)
+  .get(cacheMiddleware("customer_detail", 120), getCustomerById)
   .put(authorize("ADMIN", "AGENT"), validate(updateCustomerSchema), updateCustomer)
   .delete(authorize("ADMIN"), deleteCustomer);
 

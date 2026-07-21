@@ -10,6 +10,7 @@ import {
   recordPaymentSchema,
   updatePaymentStatusSchema,
 } from "../validations/payment.validation.js";
+import { cacheMiddleware } from "../utils/cache.js";
 
 const router = Router();
 
@@ -17,7 +18,7 @@ router.use(authenticate);
 
 router
   .route("/")
-  .get(getAllPayments)
+  .get(cacheMiddleware("payments", 120), getAllPayments)
   .post(validate(recordPaymentSchema), recordPayment);
 
 router
