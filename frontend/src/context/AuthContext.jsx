@@ -34,11 +34,6 @@ export const AuthProvider = ({ children }) => {
     setError(null);
     try {
       const response = await api.post("/auth/login", { email, password });
-      const { user: userData, token: jwtToken } = response.data.data;
-
-      localStorage.setItem("token", jwtToken);
-      setToken(jwtToken);
-      setUser(userData);
       return response.data;
     } catch (err) {
       setError(err.message);
@@ -50,11 +45,6 @@ export const AuthProvider = ({ children }) => {
     setError(null);
     try {
       const response = await api.post("/auth/register", formData);
-      const { user: userData, token: jwtToken } = response.data.data;
-
-      localStorage.setItem("token", jwtToken);
-      setToken(jwtToken);
-      setUser(userData);
       return response.data;
     } catch (err) {
       setError(err.message);
@@ -66,8 +56,11 @@ export const AuthProvider = ({ children }) => {
     setError(null);
     try {
       const response = await api.post("/auth/verify-otp", { email, otp });
-      if (user) {
-        setUser({ ...user, isEmailVerified: true });
+      if (response.data.data?.token && response.data.data?.user) {
+        const { token: jwtToken, user: userData } = response.data.data;
+        localStorage.setItem("token", jwtToken);
+        setToken(jwtToken);
+        setUser(userData);
       }
       return response.data;
     } catch (err) {

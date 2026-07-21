@@ -45,9 +45,12 @@ export const Register = () => {
     setError(null);
 
     try {
-      await register(formData);
-      // Navigate to OTP verification page
-      navigate("/verify-otp", { state: { email: formData.email } });
+      const res = await register(formData);
+      if (res.requireOtp) {
+        navigate("/verify-otp", { state: { email: formData.email, mode: "register" } });
+      } else {
+        navigate("/dashboard");
+      }
     } catch (err) {
       setError(err.message || "Failed to register account.");
     } finally {
@@ -189,7 +192,7 @@ export const Register = () => {
               <span>Creating Account...</span>
             </>
           ) : (
-            <span>Sign Up</span>
+            <span>Sign Up & Send OTP</span>
           )}
         </button>
 

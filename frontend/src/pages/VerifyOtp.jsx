@@ -10,6 +10,7 @@ export const VerifyOtp = () => {
   const { verifyOtp, resendOtp, user } = useAuth();
 
   const targetEmail = location.state?.email || user?.email || "";
+  const mode = location.state?.mode || "verification";
   const [email, setEmail] = useState(targetEmail);
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
   const [timer, setTimer] = useState(60);
@@ -79,10 +80,10 @@ export const VerifyOtp = () => {
 
     try {
       await verifyOtp(email, otpCode);
-      setSuccessMsg("Email verified successfully! Redirecting...");
+      setSuccessMsg("Verification successful! Opening Dashboard...");
       setTimeout(() => {
-        navigate("/dashboard");
-      }, 1500);
+        navigate("/dashboard", { replace: true });
+      }, 1000);
     } catch (err) {
       setError(err.message || "Invalid or expired OTP. Please try again.");
     } finally {
@@ -110,13 +111,13 @@ export const VerifyOtp = () => {
 
   return (
     <AuthLayout
-      title="Verify Email OTP"
-      subtitle={`We have sent a 6-digit verification code to ${email || "your email"}.`}
+      title={mode === "login" ? "Login OTP Verification" : "Verify Email OTP"}
+      subtitle={`We have sent a 6-digit security code to ${email || "your email"}. Enter code to open dashboard.`}
     >
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Error Alert */}
         {error && (
-          <div className="p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs font-semibold flex items-center gap-2.5">
+          <div className="p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs font-semibold flex items-center gap-2.5 animate-fadeIn">
             <AlertCircle className="w-4 h-4 shrink-0 text-rose-500" />
             <span>{error}</span>
           </div>
@@ -124,7 +125,7 @@ export const VerifyOtp = () => {
 
         {/* Success Alert */}
         {successMsg && (
-          <div className="p-3.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-semibold flex items-center gap-2.5">
+          <div className="p-3.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-semibold flex items-center gap-2.5 animate-fadeIn">
             <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-500" />
             <span>{successMsg}</span>
           </div>
@@ -150,7 +151,7 @@ export const VerifyOtp = () => {
         {/* 6-Digit OTP Boxes */}
         <div>
           <label className="text-xs font-semibold text-slate-600 block pl-1 mb-3 text-center">
-            Enter 6-Digit Code
+            Enter 6-Digit Verification Code
           </label>
           <div className="flex items-center justify-between gap-2 sm:gap-3">
             {otp.map((digit, idx) => (
@@ -205,7 +206,7 @@ export const VerifyOtp = () => {
           ) : (
             <>
               <KeyRound className="w-4 h-4" />
-              <span>Verify & Continue</span>
+              <span>Verify & Continue to Dashboard</span>
             </>
           )}
         </button>

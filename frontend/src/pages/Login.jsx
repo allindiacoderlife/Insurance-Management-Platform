@@ -26,8 +26,12 @@ export const Login = () => {
     setError(null);
 
     try {
-      await login(email, password);
-      navigate("/dashboard");
+      const res = await login(email, password);
+      if (res.requireOtp) {
+        navigate("/verify-otp", { state: { email, mode: "login" } });
+      } else {
+        navigate("/dashboard");
+      }
     } catch (err) {
       setError(
         err.message || "Failed to login. Please check your credentials.",
@@ -122,10 +126,10 @@ export const Login = () => {
           {loading ? (
             <>
               <Loader2 className="w-4 h-4 animate-spin" />
-              <span>Signing in...</span>
+              <span>Sending OTP...</span>
             </>
           ) : (
-            <span>Login</span>
+            <span>Login & Send OTP</span>
           )}
         </button>
 

@@ -71,22 +71,62 @@ export const registerUser = asyncHandler(async (req, res) => {
   await sendOtpEmail(
     result.user.email,
     otp,
-    "Verify your email - Insurance Management Platform"
+    "Verify your email OTP - Havenix Insurance ERP"
   );
-
-  const token = generateToken(result.user.id, result.user.role);
-
-  const { password: _pwd, otp: _otp, otpExpiresAt: _exp, ...sanitizedUser } = result.user;
 
   res.status(201).json({
     success: true,
-    message: "User registered successfully. An OTP has been sent to your email for verification.",
+    requireOtp: true,
+    message: "Account created successfully. An OTP has been sent to your email.",
     data: {
-      user: {
-        ...sanitizedUser,
-        customer: result.customer,
-      },
-      token,
+      email: result.user.email,
+    },
+  });
+});
+
+export const loginUser = asyncHandler(async (req, res) => {
+  const { email, password } = req.body;
+
+  const user = await prisma.user.findUnique({
+    where: { email: email.toLowerCase() },
+    include: {
+      customer: true,
+    },
+  });
+
+  if (!user) {
+    throw new ApiError(401, "Invalid email or password");
+  }
+
+  const isPasswordMatch = await bcrypt.compare(password, user.password);
+  if (!isPasswordMatch) {
+    throw new ApiError(401, "Invalid email or password");
+  }
+
+  // Generate OTP for login verification step
+  const otp = generateOtp();
+  const otpExpiresAt = new Date(Date.now() + 10 * 60 * 1000);
+
+  await prisma.user.update({
+    where: { id: user.id },
+    data: {
+      otp,
+      otpExpiresAt,
+    },
+  });
+
+  await sendOtpEmail(
+    user.email,
+    otp,
+    "Login Verification OTP - Havenix Insurance ERP"
+  );
+
+  res.status(200).json({
+    success: true,
+    requireOtp: true,
+    message: "Login verification OTP sent to your email.",
+    data: {
+      email: user.email,
     },
   });
 });
@@ -96,35 +136,41 @@ export const verifyEmailOtp = asyncHandler(async (req, res) => {
 
   const user = await prisma.user.findUnique({
     where: { email: email.toLowerCase() },
+    include: {
+      customer: true,
+    },
   });
 
   if (!user) {
     throw new ApiError(404, "User account not found");
   }
 
-  if (user.isEmailVerified) {
-    return res.status(200).json({
-      success: true,
-      message: "Email is already verified",
-    });
-  }
-
   if (!user.otp || user.otp !== otp || !user.otpExpiresAt || user.otpExpiresAt < new Date()) {
     throw new ApiError(400, "Invalid or expired OTP");
   }
 
-  await prisma.user.update({
+  const updatedUser = await prisma.user.update({
     where: { id: user.id },
     data: {
       isEmailVerified: true,
       otp: null,
       otpExpiresAt: null,
     },
+    include: {
+      customer: true,
+    },
   });
+
+  const token = generateToken(updatedUser.id, updatedUser.role);
+  const { password: _pwd, otp: _otp, otpExpiresAt: _exp, ...sanitizedUser } = updatedUser;
 
   res.status(200).json({
     success: true,
-    message: "Email verified successfully",
+    message: "Verification successful! Welcome to Havenix Insurance ERP.",
+    data: {
+      user: sanitizedUser,
+      token,
+    },
   });
 });
 
@@ -153,7 +199,7 @@ export const resendOtp = asyncHandler(async (req, res) => {
   await sendOtpEmail(
     user.email,
     otp,
-    "Your New Verification OTP - Insurance Management Platform"
+    "Your New Verification OTP - Havenix Insurance ERP"
   );
 
   res.status(200).json({
@@ -187,7 +233,7 @@ export const forgotPassword = asyncHandler(async (req, res) => {
   await sendOtpEmail(
     user.email,
     otp,
-    "Password Reset OTP - Insurance Management Platform"
+    "Password Reset OTP - Havenix Insurance ERP"
   );
 
   res.status(200).json({
@@ -226,39 +272,6 @@ export const resetPassword = asyncHandler(async (req, res) => {
   res.status(200).json({
     success: true,
     message: "Password has been reset successfully. You can now log in with your new password.",
-  });
-});
-
-export const loginUser = asyncHandler(async (req, res) => {
-  const { email, password } = req.body;
-
-  const user = await prisma.user.findUnique({
-    where: { email: email.toLowerCase() },
-    include: {
-      customer: true,
-    },
-  });
-
-  if (!user) {
-    throw new ApiError(401, "Invalid email or password");
-  }
-
-  const isPasswordMatch = await bcrypt.compare(password, user.password);
-  if (!isPasswordMatch) {
-    throw new ApiError(401, "Invalid email or password");
-  }
-
-  const token = generateToken(user.id, user.role);
-
-  const { password: _pwd, otp: _otp, otpExpiresAt: _exp, ...sanitizedUser } = user;
-
-  res.status(200).json({
-    success: true,
-    message: "Logged in successfully",
-    data: {
-      user: sanitizedUser,
-      token,
-    },
   });
 });
 
