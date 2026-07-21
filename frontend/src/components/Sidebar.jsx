@@ -41,19 +41,19 @@ export const Sidebar = ({ mobileOpen, setMobileOpen }) => {
       {mobileOpen && (
         <div
           onClick={() => setMobileOpen(false)}
-          className="fixed inset-0 z-40 bg-slate-950/50 backdrop-blur-xs lg:hidden animate-fadeIn"
+          className="fixed inset-0 z-40 bg-slate-950/60 backdrop-blur-xs lg:hidden animate-fadeIn"
         />
       )}
 
       {/* Sidebar Container */}
       <aside
-        className={`fixed lg:static top-0 left-0 z-50 w-64 bg-[#f7f8f4] h-screen lg:h-auto flex flex-col justify-between p-4 shrink-0 font-sans select-none transition-transform duration-300 ${
+        className={`fixed lg:static top-0 left-0 z-50 w-64 bg-[#f7f8f4] dark:bg-[#090d16] border-r border-transparent dark:border-[#223048] h-screen lg:h-auto flex flex-col justify-between p-4 shrink-0 font-sans select-none transition-all duration-300 ${
           mobileOpen ? "translate-x-0 shadow-2xl" : "-translate-x-full lg:translate-x-0"
         }`}
       >
         <div>
           {/* Top Dark Curved Brand Logo Header */}
-          <div className="bg-[#0b281a] text-white p-5 rounded-3xl mb-6 flex items-center justify-between shadow-lg shadow-[#0b281a]/20">
+          <div className="bg-[#0b281a] dark:bg-[#131c2e] border border-transparent dark:border-emerald-500/20 text-white p-5 rounded-3xl mb-6 flex items-center justify-between shadow-lg shadow-[#0b281a]/20">
             <div className="flex items-center gap-3">
               <div className="w-9 h-9 rounded-2xl bg-emerald-500/20 border border-emerald-400/30 flex items-center justify-center text-emerald-400 font-bold">
                 <Shield className="w-5 h-5 fill-emerald-400/20" />
@@ -89,8 +89,8 @@ export const Sidebar = ({ mobileOpen, setMobileOpen }) => {
                   className={({ isActive }) =>
                     `flex items-center gap-3.5 px-4 py-3 rounded-2xl text-xs font-semibold transition-all duration-200 ${
                       isActive
-                        ? "bg-[#e2f5cf] text-[#0b281a] font-extrabold shadow-sm"
-                        : "text-slate-600 hover:text-slate-900 hover:bg-white/80"
+                        ? "bg-[#e2f5cf] dark:bg-emerald-500/20 text-[#0b281a] dark:text-emerald-300 font-extrabold shadow-sm border border-transparent dark:border-emerald-500/30"
+                        : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-white/80 dark:hover:bg-[#131c2e]"
                     }`
                   }
                 >
@@ -103,23 +103,23 @@ export const Sidebar = ({ mobileOpen, setMobileOpen }) => {
         </div>
 
         {/* Bottom Promo Card */}
-        <div className="bg-white p-4 rounded-3xl border border-slate-200/60 shadow-sm space-y-3 mt-6">
-          <div className="w-10 h-10 rounded-2xl bg-[#e2f5cf] text-[#0b281a] flex items-center justify-center font-bold">
+        <div className="bg-white dark:bg-[#131c2e] p-4 rounded-3xl border border-slate-200/60 dark:border-[#223048] shadow-sm space-y-3 mt-6">
+          <div className="w-10 h-10 rounded-2xl bg-[#e2f5cf] dark:bg-emerald-500/20 text-[#0b281a] dark:text-emerald-300 flex items-center justify-center font-bold">
             <Sparkles className="w-5 h-5" />
           </div>
           <div>
-            <h4 className="text-xs font-extrabold text-slate-900 mb-1">Grow your business</h4>
-            <p className="text-[11px] text-slate-500 font-medium leading-relaxed">
+            <h4 className="text-xs font-extrabold text-slate-900 dark:text-slate-100 mb-1">Grow your business</h4>
+            <p className="text-[11px] text-slate-500 dark:text-slate-400 font-medium leading-relaxed">
               Get more policy leads & automate claims with smart tools.
             </p>
           </div>
           <Link
             to="/upgrade-plan"
             onClick={() => setMobileOpen && setMobileOpen(false)}
-            className="w-full h-9 rounded-xl bg-[#0b281a] hover:bg-[#061d12] text-white font-bold text-xs shadow-xs transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+            className="w-full h-9 rounded-xl bg-[#0b281a] hover:bg-[#061d12] dark:bg-emerald-600 dark:hover:bg-emerald-500 text-white font-bold text-xs shadow-xs transition-all flex items-center justify-center gap-1.5 cursor-pointer"
           >
             <span>Upgrade Plan</span>
-            <ArrowUpRight className="w-3.5 h-3.5 text-emerald-400" />
+            <ArrowUpRight className="w-3.5 h-3.5 text-emerald-400 dark:text-emerald-200" />
           </Link>
         </div>
       </aside>
