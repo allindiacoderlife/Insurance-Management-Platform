@@ -8,11 +8,14 @@ const globalForPrisma = globalThis;
 
 function createPrismaClient() {
   const connectionString = config.database.url;
+  if (!connectionString) {
+    console.error("🔴 DATABASE_URL is undefined! Please add it in Vercel Project Settings > Environment Variables.");
+  }
   const pool = new pg.Pool({
     connectionString,
-    connectionTimeoutMillis: 10000, // 10 seconds to establish connection
+    connectionTimeoutMillis: 10000,
     idleTimeoutMillis: 30000,
-    max: 20, // Increase max connections if needed
+    max: 20,
   });
   const adapter = new PrismaPg(pool);
   return new PrismaClient({
