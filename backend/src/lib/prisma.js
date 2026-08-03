@@ -9,7 +9,7 @@ const globalForPrisma = globalThis;
 function createPrismaClient() {
   const connectionString = config.database.url;
   if (!connectionString) {
-    console.error("🔴 DATABASE_URL is undefined! Please add it in Vercel Project Settings > Environment Variables.");
+    throw new Error("DATABASE_URL is not defined in environment variables. Please check your Vercel Project Settings.");
   }
   const pool = new pg.Pool({
     connectionString,
@@ -27,10 +27,20 @@ function createPrismaClient() {
   });
 }
 
-export const prisma = globalForPrisma.prisma ?? createPrismaClient();
+// Lazy initialization using a Proxy
+let prismaInstance = globalForPrisma.prisma;
 
-if (process.env.NODE_ENV !== "production") {
-  globalForPrisma.prisma = prisma;
-}
+export const prisma = new Proxy({}, {
+  get(target, prop) {
+    if (!prismaInstance) {
+      prismaInstance = createPrismaClient();
+      if (process.env.NODE_ENV !== "production") {
+        globalForPrisma.prisma = prismaInstance;
+      }
+    }
+    return prismaInstance[prop];
+  }
+});
 
 export default prisma;
+
