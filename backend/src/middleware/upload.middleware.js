@@ -3,11 +3,16 @@ import path from "path";
 import fs from "fs";
 import ApiError from "../utils/ApiError.js";
 
-// Ensure uploads directory exists
-const uploadDir = path.resolve("uploads");
-if (!fs.existsSync(uploadDir)) {
-  fs.mkdirSync(uploadDir, { recursive: true });
+// Ensure uploads directory exists (use /tmp on Vercel as it is the only writeable directory)
+const uploadDir = process.env.VERCEL === "1" ? "/tmp" : path.resolve("uploads");
+if (process.env.VERCEL !== "1" && !fs.existsSync(uploadDir)) {
+  try {
+    fs.mkdirSync(uploadDir, { recursive: true });
+  } catch (err) {
+    console.error("⚠️ Failed to create local uploads directory:", err);
+  }
 }
+
 
 // Storage Configuration
 const storage = multer.diskStorage({
