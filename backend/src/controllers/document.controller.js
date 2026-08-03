@@ -4,6 +4,8 @@ import prisma from "../lib/prisma.js";
 import ApiError from "../utils/ApiError.js";
 import asyncHandler from "../utils/asyncHandler.js";
 
+const uploadDir = process.env.VERCEL === "1" ? "/tmp" : path.resolve("uploads");
+
 // @desc    Upload document for customer
 // @route   POST /api/v1/documents/upload
 // @access  Protected
@@ -70,7 +72,7 @@ export const downloadDocument = asyncHandler(async (req, res) => {
     throw new ApiError(404, "Document record not found");
   }
 
-  const fullPath = path.resolve("uploads", document.filePath);
+  const fullPath = path.resolve(uploadDir, document.filePath);
   if (!fs.existsSync(fullPath)) {
     throw new ApiError(404, "File not found on server disk");
   }
@@ -89,7 +91,7 @@ export const deleteDocument = asyncHandler(async (req, res) => {
     throw new ApiError(404, "Document not found");
   }
 
-  const fullPath = path.resolve("uploads", document.filePath);
+  const fullPath = path.resolve(uploadDir, document.filePath);
   if (fs.existsSync(fullPath)) {
     fs.unlinkSync(fullPath);
   }
